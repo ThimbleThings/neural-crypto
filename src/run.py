@@ -105,21 +105,28 @@ def main(argv):
         tauB = Bob.get_output(X)
         tauE = Eve.get_output(X)
 
-        Alice.update(tauB, update_rule)
-        Bob.update(tauA, update_rule)
+        # Alice and Bob would update only if tauA == tauB
+        if tauA == tauB:
+            Alice.update(update_rule)
+            Bob.update(update_rule)
+            nb_updates += 1
 
         # Eve would update only if tauA = tauB = tauE
         if tauA == tauB == tauE:
-            Eve.update(tauA, update_rule)
+            Eve.update(update_rule)
             nb_eve_updates += 1
 
-        nb_updates += 1
+
         # sync of Alice and Bob
         score = 100 * sync_score(Alice, Bob, L)  # Calculate the synchronization of Alice and Bob
         sync_history.append(score)  # plot purpose
         # sync of Alice and Eve
         score_eve = 100 * sync_score(Alice, Eve, L)  # Calculate the synchronization of Alice and Eve
         sync_history_eve.append(score_eve)  # plot purpose
+
+        # When the networks take longer than 30 seconds to synchronize terminate
+        if time.time() - start_time > 30.0:
+            break
 
         # sys.stdout.write("\r" + "Synchronization = " + str(int(score)) + "%   /  Updates = " + str(
         #    nb_updates) + " / Eve's updates = " + str(nb_eve_updates))
@@ -160,8 +167,8 @@ def main(argv):
             output, error = process.communicate()
             print("encryption and decryption with aes" + str(key_length) + " done.")
 
-    else:
-        print("error, Alice and Bob have different key or iv : cipher impossible")
+    #else:
+    #    print("error, Alice and Bob have different key or iv : cipher impossible")
 
     '''
     # Plot graph

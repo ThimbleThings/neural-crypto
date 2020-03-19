@@ -60,50 +60,48 @@ class TPM:
 
         return tau
 
-    def hebbian(self, tau1, tau2):
+    def hebbian(self):
         '''
         hebbian update rule
         '''
 
         for (i, j), _ in np.ndenumerate(self.W):
-            self.W[i, j] += self.X[i, j] * tau1 * theta(self.sigma[i], tau1) * theta(tau1, tau2)
+            self.W[i, j] += self.X[i, j] * self.tau * theta(self.sigma[i], self.tau)
             self.W[i, j] = np.clip(self.W[i, j], -self.L, self.L)
 
-    def anti_hebbian(self, tau1, tau2):
+    def anti_hebbian(self):
         '''
         anti-hebbian update rule
         '''
 
         for (i, j), _ in np.ndenumerate(self.W):
-            self.W[i, j] -= self.X[i, j] * tau1 * theta(self.sigma[i], tau1) * theta(tau1, tau2)
+            self.W[i, j] -= self.X[i, j] * self.tau * theta(self.sigma[i], self.tau)
             self.W[i, j] = np.clip(self.W[i, j], -self.L, self.L)
 
-    def random_walk(self, tau1, tau2):
+    def random_walk(self):
         '''
         random walk update rule
         '''
 
         for (i, j), _ in np.ndenumerate(self.W):
-            self.W[i, j] += self.X[i, j] * theta(self.sigma[i], tau1) * theta(tau1, tau2)
+            self.W[i, j] += self.X[i, j] * theta(self.sigma[i], self.tau)
             self.W[i, j] = np.clip(self.W[i, j], -self.L, self.L)
 
-    def update(self, tau2, update_rule='hebbian'):
+    def update(self, update_rule='hebbian'):
         '''
         Updates the weights according to the specified update rule.
-        tau2 - Output bit from the other machine;
         update_rule - The update rule : ['hebbian', 'anti_hebbian', random_walk']
         '''
 
-        if self.tau == tau2:
-            if update_rule == 'hebbian':
-                self.hebbian(self.tau, tau2)
-            elif update_rule == 'anti_hebbian':
-                self.anti_hebbian(self.tau, tau2)
-            elif update_rule == 'random_walk':
-                self.random_walk(self.tau, tau2)
-            else:
-                raise Exception("Invalid update rule. Valid update rules are: " +
-                                "\'hebbian\', \'anti_hebbian\' and \'random_walk\'.")
+        if update_rule == 'hebbian':
+            self.hebbian()
+        elif update_rule == 'anti_hebbian':
+            self.anti_hebbian()
+        elif update_rule == 'random_walk':
+            self.random_walk()
+        else:
+            raise Exception("Invalid update rule. Valid update rules are: " +
+                            "\'hebbian\', \'anti_hebbian\' and \'random_walk\'.")
 
     # make key from weight matrix
     def makeKey(self, key_length, iv_length):
