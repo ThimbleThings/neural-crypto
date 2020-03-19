@@ -1,8 +1,10 @@
 import numpy as np
 import hashlib
 
+
 def theta(t1, t2):
     return t1 == t2
+
 
 class TPM:
     '''TPM
@@ -13,6 +15,7 @@ class TPM:
     W - weight matrix between input and hidden layers. Dimensions : [K, N]
     tau - output score
     '''
+
     def __init__(self, K=8, N=12, L=4):
         self.K = K
         self.N = N
@@ -42,7 +45,7 @@ class TPM:
         '''
         for (i, j), _ in np.ndenumerate(self.W):
             self.W[i, j] += self.X[i, j] * tau1 * theta(self.sigma[i], tau1) * theta(tau1, tau2)
-            self.W[i, j] = np.clip(self.W[i, j] , -self.L, self.L)
+            self.W[i, j] = np.clip(self.W[i, j], -self.L, self.L)
 
     def anti_hebbian(self, tau1, tau2):
         '''
@@ -58,7 +61,7 @@ class TPM:
         '''
         for (i, j), _ in np.ndenumerate(self.W):
             self.W[i, j] += self.X[i, j] * theta(self.sigma[i], tau1) * theta(tau1, tau2)
-            self.W[i, j] = np.clip(self.W[i, j] , -self.L, self.L)        
+            self.W[i, j] = np.clip(self.W[i, j], -self.L, self.L)
 
     def update(self, tau2, update_rule='hebbian'):
         '''
@@ -74,10 +77,10 @@ class TPM:
             elif update_rule == 'random_walk':
                 self.random_walk(self.tau, tau2)
             else:
-                raise Exception("Invalid update rule. Valid update rules are: " + 
-                    "\'hebbian\', \'anti_hebbian\' and \'random_walk\'.")
+                raise Exception("Invalid update rule. Valid update rules are: " +
+                                "\'hebbian\', \'anti_hebbian\' and \'random_walk\'.")
 
-    #make key from weight matrix
+    # make key from weight matrix
     def makeKey(self, key_length, iv_length):
         '''makeKey
         weight matrix to key and iv : use sha256 on concatenated weights 
@@ -90,10 +93,9 @@ class TPM:
                 iv += str(self.W[i, j])
             key += str(self.W[i, j])
         # sha256 iv
-        hash_object_iv = hashlib.sha256(iv)
-        hex_dig_iv = hash_object_iv.hexdigest()            
+        hash_object_iv = hashlib.sha256(iv.encode("ascii"))
+        hex_dig_iv = hash_object_iv.hexdigest()
         # sha256 key
-        hash_object_key = hashlib.sha256(key)
+        hash_object_key = hashlib.sha256(key.encode("ascii"))
         hex_dig_key = hash_object_key.hexdigest()
         return (hex_dig_key[0:int(key_length / 4)], hex_dig_iv[0:int(iv_length / 4)])
-
