@@ -17,6 +17,13 @@ class TPM:
     '''
 
     def __init__(self, K=8, N=12, L=4):
+        '''
+        Initialize TPM
+        :param K: number of hidden neurons
+        :param N: number of inputs per neuron
+        :param L: range of discrete weights
+        '''
+
         self.K = K
         self.N = N
         self.L = L
@@ -28,6 +35,7 @@ class TPM:
         Returns a binary digit tau for a given random vector.
         X - Input random vector
         '''
+
         X = X.reshape([self.K, self.N])
 
         '''
@@ -36,7 +44,7 @@ class TPM:
         But research papers suggest using a sign() defined as:
         sign(x) = -1, if x <= 0, and 1 if x > 0
         
-        For reference see Neural Synchronization and Cryptography, Ruttor 2006, Page 14.
+        For reference see: Neural Synchronization and Cryptography, Ruttor 2006, Page 14.
         
         We know that the sum over the weighted inputs is always a whole integer.
         Thus we can subtract 0.5 and force the results of the calculation to always be
@@ -56,6 +64,7 @@ class TPM:
         '''
         hebbian update rule
         '''
+
         for (i, j), _ in np.ndenumerate(self.W):
             self.W[i, j] += self.X[i, j] * tau1 * theta(self.sigma[i], tau1) * theta(tau1, tau2)
             self.W[i, j] = np.clip(self.W[i, j], -self.L, self.L)
@@ -64,6 +73,7 @@ class TPM:
         '''
         anti-hebbian update rule
         '''
+
         for (i, j), _ in np.ndenumerate(self.W):
             self.W[i, j] -= self.X[i, j] * tau1 * theta(self.sigma[i], tau1) * theta(tau1, tau2)
             self.W[i, j] = np.clip(self.W[i, j], -self.L, self.L)
@@ -72,6 +82,7 @@ class TPM:
         '''
         random walk update rule
         '''
+
         for (i, j), _ in np.ndenumerate(self.W):
             self.W[i, j] += self.X[i, j] * theta(self.sigma[i], tau1) * theta(tau1, tau2)
             self.W[i, j] = np.clip(self.W[i, j], -self.L, self.L)
@@ -82,6 +93,7 @@ class TPM:
         tau2 - Output bit from the other machine;
         update_rule - The update rule : ['hebbian', 'anti_hebbian', random_walk']
         '''
+
         if self.tau == tau2:
             if update_rule == 'hebbian':
                 self.hebbian(self.tau, tau2)
@@ -98,17 +110,23 @@ class TPM:
         '''makeKey
         weight matrix to key and iv : use sha256 on concatenated weights 
         '''
+
         key = ''
         iv = ''
+
         # generate key
         for (i, j), _ in np.ndenumerate(self.W):
             if i == j:
                 iv += str(self.W[i, j])
             key += str(self.W[i, j])
+
         # sha256 iv
         hash_object_iv = hashlib.sha256(iv.encode("ascii"))
         hex_dig_iv = hash_object_iv.hexdigest()
+
         # sha256 key
         hash_object_key = hashlib.sha256(key.encode("ascii"))
         hex_dig_key = hash_object_key.hexdigest()
+
+        # key & iv lengths are given in bits, divide by 4 to get number of chars in hex string
         return (hex_dig_key[0:int(key_length / 4)], hex_dig_iv[0:int(iv_length / 4)])
