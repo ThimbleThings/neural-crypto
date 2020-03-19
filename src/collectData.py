@@ -32,5 +32,5 @@ with open('collectedData.txt', 'w') as f:
                 for item in data:
                     f.write("{}\n".format(item))
 
-                print("Ran 1000x for K:" + str(k) + " N:" + str(n) + " L:" + str(l))
-                print("Time taken was: " + str(time_taken) + " seconds")
+                #print("Ran 1000x for K:" + str(k) + " N:" + str(n) + " L:" + str(l))
+                #print("Time taken was: " + str(time_taken) + " seconds")
