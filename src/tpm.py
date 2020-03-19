@@ -28,6 +28,7 @@ class TPM:
         self.N = N
         self.L = L
         self.W = np.random.randint(-L, L + 1, [K, N])
+        self.sigma = np.ndarray
         self.tau = 0
 
     def get_output(self, X):
