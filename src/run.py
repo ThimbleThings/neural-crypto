@@ -48,8 +48,8 @@ def main(argv):
                 'run.py -r hebbian -i <input file> -o <output file> -K <nb hidden neurons> -N <nb input neurons> -L <range of weight> -k <key length> -v <iv length>')
             print('update rule : hebbian, anti_hebbian, random_walk')
             print('default values : K=8, N=12, L=4')
-            print('key length options : 128, 192, 256')
-            print('iv length : [0:256]')
+            print('key length options : 128, 192, 256 bit')
+            print('iv length : [0:256] bit')
             sys.exit()
         elif opt in ("-i", "--i"):
             has_input_file = True
@@ -66,6 +66,11 @@ def main(argv):
             iv_length = int(arg)
         elif opt in ("-r", "--r"):
             update_rule = str(arg)
+            if update_rule not in update_rules:
+                print('unknown update rule: ' + update_rule)
+                print('available options:')
+                print(update_rules)
+                sys.exit()
         elif opt in ("-k", "--k"):
             if arg == "128" or arg == "192" or arg == "256":
                 key_length = int(arg)
@@ -126,9 +131,15 @@ def main(argv):
     Alice_key, Alice_iv = Alice.makeKey(key_length, iv_length)
     Bob_key, Bob_iv = Bob.makeKey(key_length, iv_length)
     Eve_key, Eve_iv = Eve.makeKey(key_length, iv_length)
-    print("Alice's gen key = " + str(len(Alice_key)) + " key : " + Alice_key + " iv : " + Alice_iv)
-    print("Bob's gen key = " + str(len(Bob_key)) + " key : " + Bob_key + " iv : " + Bob_iv)
-    print("Eve's gen key = " + str(len(Eve_key)) + " key : " + Eve_key + " iv : " + Eve_iv)
+
+    # The key is a string of hex values, thus the length has to be divided by 2 to get the number of bytes.
+    # Or multiplied by 4 to get the number of bits.
+    print("Alice's key & iv length = " + str(int(len(Alice_key) / 2)) + "byte (" + str(
+        len(Alice_key) * 4) + "bit), key: " + Alice_key + " iv: " + Alice_iv)
+    print("Bob's   key & iv length = " + str(int(len(Bob_key) / 2)) + "byte (" + str(
+        len(Bob_key) * 4) + "bit), key: " + Bob_key + " iv: " + Bob_iv)
+    print("Eve's   key & iv length = " + str(int(len(Eve_key) / 2)) + "byte (" + str(
+        len(Eve_key) * 4) + "bit), key: " + Eve_key + " iv: " + Eve_iv)
 
     if Alice_key == Bob_key and Alice_iv == Bob_iv:
         if has_input_file:
