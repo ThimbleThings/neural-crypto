@@ -1,7 +1,7 @@
 from tpm import TPM
 import numpy as np
 import time, sys, getopt
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 
 def random(K, N, L):
