@@ -82,7 +82,7 @@ def main(argv):
                 sys.exit()
 
     # Create TPM for Alice, Bob and Eve. Eve eavesdrops communication of Alice and Bob
-    print("Creating machines : K=" + str(K) + ", N=" + str(N) + ", L=" +
+    print("Parameters: K=" + str(K) + ", N=" + str(N) + ", L=" +
           str(L) + ", k=" + str(key_length) + ", v=" + str(iv_length))
     Alice = TPM(K, N, L)
     Bob = TPM(K, N, L)
@@ -121,14 +121,17 @@ def main(argv):
         score_eve = 100 * sync_score(Alice, Eve, L)  # Calculate the synchronization of Alice and Eve
         sync_history_eve.append(score_eve)  # plot purpose
 
-        sys.stdout.write("\r" + "Synchronization = " + str(int(score)) + "%   /  Updates = " + str(
-            nb_updates) + " / Eve's updates = " + str(nb_eve_updates))
+        # sys.stdout.write("\r" + "Synchronization = " + str(int(score)) + "%   /  Updates = " + str(
+        #    nb_updates) + " / Eve's updates = " + str(nb_eve_updates))
+
+    print("ABUpdates: " + str(nb_updates) + " EUpdates: " + str(nb_eve_updates))
+    print("Sync AB: " + str(int(sync_history[-1])) + " AE: " + str(int(sync_history_eve[-1])))
 
     end_time = time.time()
     time_taken = end_time - start_time
 
     # results
-    print("\nTime taken = " + str(time_taken) + " seconds.")
+    # print("\nTime taken = " + str(time_taken) + " seconds.")
     Alice_key, Alice_iv = Alice.makeKey(key_length, iv_length)
     Bob_key, Bob_iv = Bob.makeKey(key_length, iv_length)
     Eve_key, Eve_iv = Eve.makeKey(key_length, iv_length)
@@ -160,6 +163,7 @@ def main(argv):
     else:
         print("error, Alice and Bob have different key or iv : cipher impossible")
 
+    '''
     # Plot graph
     plt.figure(1)
     plt.title('Synchronisation')
@@ -169,6 +173,7 @@ def main(argv):
     sync_Eve, = plt.plot(sync_history_eve)
     plt.legend([sync_AB, sync_Eve], ["sync Alice Bob", "sync Alice Eve"])
     plt.show()
+    '''
 
 
 if __name__ == "__main__":
