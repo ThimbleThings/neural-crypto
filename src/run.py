@@ -116,7 +116,6 @@ def main(argv):
             Eve.update(update_rule)
             nb_eve_updates += 1
 
-
         # sync of Alice and Bob
         score = 100 * sync_score(Alice, Bob, L)  # Calculate the synchronization of Alice and Bob
         sync_history.append(score)  # plot purpose
@@ -167,7 +166,7 @@ def main(argv):
             output, error = process.communicate()
             print("encryption and decryption with aes" + str(key_length) + " done.")
 
-    #else:
+    # else:
     #    print("error, Alice and Bob have different key or iv : cipher impossible")
 
     '''
