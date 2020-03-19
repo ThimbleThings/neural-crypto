@@ -8,6 +8,7 @@ def random(K, N, L):
     '''random
     return a random vector input for TPM
     '''
+
     return np.random.randint(-L, L + 1, [K, N])
 
 
@@ -17,6 +18,7 @@ def sync_score(TPM1, TPM2, L):
     TPM1 - Tree Parity Machine 1
     TPM2 - Tree Parity Machine 2
     '''
+
     return 1.0 - np.average(1.0 * np.abs(TPM1.W - TPM2.W) / (2 * L))
 
 
@@ -36,16 +38,16 @@ def main(argv):
         opts, args = getopt.getopt(argv, "hK:N:L:k:v:i:o:r:", ["K=", "N=", "L=", "k=", "v=", "i=", "o=", "r="])
     except getopt.GetoptError:
         print('unknown options')
-        print(
-            'run.py -r hebbian -i <input file> -o <output file> -K <nb hidden neurons> -N <nb input neurons> -L <range of weight> -k <key length> -v <iv length>')
+        print('run.py -r hebbian -i <input file> -o <output file> -K <nb hidden neurons> -N' +
+              ' <nb input neurons> -L <range of weight> -k <key length> -v <iv length>')
         print('update rule : hebbian, anti_hebbian, random_walk')
         print('key length options : 128, 192, 256')
         print('iv length : [0:256] multiple of 4')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print(
-                'run.py -r hebbian -i <input file> -o <output file> -K <nb hidden neurons> -N <nb input neurons> -L <range of weight> -k <key length> -v <iv length>')
+            print('run.py -r hebbian -i <input file> -o <output file> -K <nb hidden neurons> -N' +
+                  ' <nb input neurons> -L <range of weight> -k <key length> -v <iv length>')
             print('update rule : hebbian, anti_hebbian, random_walk')
             print('default values : K=8, N=12, L=4')
             print('key length options : 128, 192, 256 bit')
@@ -80,9 +82,8 @@ def main(argv):
                 sys.exit()
 
     # Create TPM for Alice, Bob and Eve. Eve eavesdrops communication of Alice and Bob
-    print(
-        "Creating machines : K=" + str(K) + ", N=" + str(N) + ", L=" + str(L) + ", k=" + str(key_length) + ", v=" + str(
-            iv_length))
+    print("Creating machines : K=" + str(K) + ", N=" + str(N) + ", L=" +
+          str(L) + ", k=" + str(key_length) + ", v=" + str(iv_length))
     Alice = TPM(K, N, L)
     Bob = TPM(K, N, L)
     Eve = TPM(K, N, L)
@@ -134,27 +135,28 @@ def main(argv):
 
     # The key is a string of hex values, thus the length has to be divided by 2 to get the number of bytes.
     # Or multiplied by 4 to get the number of bits.
-    print("Alice's key & iv length = " + str(int(len(Alice_key) / 2)) + "byte (" + str(
-        len(Alice_key) * 4) + "bit), key: " + Alice_key + " iv: " + Alice_iv)
-    print("Bob's   key & iv length = " + str(int(len(Bob_key) / 2)) + "byte (" + str(
-        len(Bob_key) * 4) + "bit), key: " + Bob_key + " iv: " + Bob_iv)
-    print("Eve's   key & iv length = " + str(int(len(Eve_key) / 2)) + "byte (" + str(
-        len(Eve_key) * 4) + "bit), key: " + Eve_key + " iv: " + Eve_iv)
+    print("Alice's key & iv length = " + str(int(len(Alice_key) / 2)) + "byte (" + str(len(Alice_key) * 4) +
+          "bit), key: " + Alice_key + " iv: " + Alice_iv)
+    print("Bob's   key & iv length = " + str(int(len(Bob_key) / 2)) + "byte (" + str(len(Bob_key) * 4) +
+          "bit), key: " + Bob_key + " iv: " + Bob_iv)
+    print("Eve's   key & iv length = " + str(int(len(Eve_key) / 2)) + "byte (" + str(len(Eve_key) * 4) +
+          "bit), key: " + Eve_key + " iv: " + Eve_iv)
 
     if Alice_key == Bob_key and Alice_iv == Bob_iv:
         if has_input_file:
             import subprocess
             # cipher with AES 
-            bashCommand = "openssl enc -aes" + str(
-                key_length) + " -K " + Alice_key + " -iv " + Alice_iv + " -in " + input_file + " -out " + output_file
+            bashCommand = "openssl enc -aes" + str(key_length) + " -K " + Alice_key + " -iv " + Alice_iv + " -in " + \
+                          input_file + " -out " + output_file
             process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
             output, error = process.communicate()
             # decipher with AES
-            bashCommand = "openssl enc -aes" + str(
-                key_length) + " -K " + Alice_key + " -iv " + Alice_iv + " -in " + output_file + " -out " + "decipher.txt" + " -d"
+            bashCommand = "openssl enc -aes" + str(key_length) + " -K " + Alice_key + " -iv " + Alice_iv + " -in " + \
+                          output_file + " -out " + "decipher.txt" + " -d"
             process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
             output, error = process.communicate()
             print("encryption and decryption with aes" + str(key_length) + " done.")
+
     else:
         print("error, Alice and Bob have different key or iv : cipher impossible")
 
