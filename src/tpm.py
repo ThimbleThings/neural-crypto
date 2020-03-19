@@ -25,12 +25,25 @@ class TPM:
 
     def get_output(self, X):
         '''
-        Returns a binary digit tau for a given random vecor.
+        Returns a binary digit tau for a given random vector.
         X - Input random vector
         '''
         X = X.reshape([self.K, self.N])
 
-        sigma = np.sign(np.sum(X * self.W, axis=1))
+        '''
+        np.sign() is defined as:
+        np.sign(x) = -1 if x < 0, 0 if x = 0, 1 if x > 0
+        But research papers suggest using a sign() defined as:
+        sign(x) = -1, if x <= 0, and 1 if x > 0
+        
+        For reference see Neural Synchronization and Cryptography, Ruttor 2006, Page 14.
+        
+        We know that the sum over the weighted inputs is always a whole integer.
+        Thus we can subtract 0.5 and force the results of the calculation to always be
+        either -1 or +1.
+        The resulting sigma vector would be of type float, but we force it to be int.
+        '''
+        sigma = np.sign(np.sum(X * self.W, axis=1) - 0.5).astype(int)
         tau = np.prod(sigma)
 
         self.X = X
