@@ -4,12 +4,17 @@ import time, sys, getopt
 #import matplotlib.pyplot as plt
 
 
-def random(K, N, L):
+def random(K, N):
     '''random
     return a random vector input for TPM
     '''
 
-    return np.random.randint(-L, L + 1, [K, N])
+    """
+    Inputs to the Tree Parity Machine should always be binary from the set {-1, +1}.
+    
+    For reference see: Neural Synchronization and Cryptography, Ruttor 2006, Page 14.
+    """
+    return np.random.choice(np.array([-1, 1]), [K, N])
 
 
 def sync_score(TPM1, TPM2, L):
@@ -98,7 +103,7 @@ def main(argv):
 
     while score < 100:
 
-        X = random(K, N, L)  # Create random vector [K, N]
+        X = random(K, N)  # Create random vector [K, N]
 
         # compute outputs of TPMs
         tauA = Alice.get_output(X)
