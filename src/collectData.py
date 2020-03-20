@@ -7,9 +7,9 @@ data = list()
 We want to test for different K, N, and L to empirically analyze the data
 """
 
-k_set = [2, 3, 4]
+k_set = [2, 3, 4, 5, 6, 7, 8]
 n_set = [2, 4, 8]
-l_set = [2, 4, 8, 16, 32]
+l_set = [2, 4, 8, 16, 32, 64, 128, 256]
 
 with open('collectedData.txt', 'w') as f:
     for k in k_set:
@@ -31,6 +31,3 @@ with open('collectedData.txt', 'w') as f:
                 # after a configuration was run for 1000 times write out the data
                 for item in data:
                     f.write("{}\n".format(item))
-
-                #print("Ran 1000x for K:" + str(k) + " N:" + str(n) + " L:" + str(l))
-                #print("Time taken was: " + str(time_taken) + " seconds")
