@@ -8,8 +8,8 @@ We want to test for different K, N, and L to empirically analyze the data
 """
 
 k_set = [2, 3, 4, 5, 6, 7, 8]
-n_set = [2, 4, 8]
-l_set = [2, 4, 8, 16, 32, 64, 128, 256]
+n_set = [2, 16, 128, 512, 1024]
+l_set = [2, 16, 64, 128, 256]
 
 with open('collectedData.txt', 'w') as f:
     for k in k_set:
