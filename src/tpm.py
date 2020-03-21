@@ -16,12 +16,13 @@ class TPM:
     tau - output score
     '''
 
-    def __init__(self, K=8, N=12, L=4):
+    def __init__(self, K=8, N=12, L=4, update_rule=0):
         '''
         Initialize TPM
         :param K: number of hidden neurons
         :param N: number of inputs per neuron
         :param L: range of discrete weights
+        :param update_rule: Update rule for TPM weights
         '''
 
         self.K = K
@@ -30,6 +31,14 @@ class TPM:
         self.W = np.random.randint(-L, L + 1, [K, N])
         self.sigma = np.ndarray
         self.tau = 0
+
+        # Use a function pointer instead of if/else construct to select update function
+        if update_rule == 0:
+            self.update_rule = self.hebbian
+        elif update_rule == 1:
+            self.update_rule = self.anti_hebbian
+        else:
+            self.update_rule = self.random_walk
 
     def get_output(self, X):
         '''
@@ -88,21 +97,12 @@ class TPM:
             self.W[i, j] += self.X[i, j] * theta(self.sigma[i], self.tau)
             self.W[i, j] = np.clip(self.W[i, j], -self.L, self.L)
 
-    def update(self, update_rule='hebbian'):
+    def update(self):
         '''
         Updates the weights according to the specified update rule.
-        update_rule - The update rule : ['hebbian', 'anti_hebbian', random_walk']
         '''
 
-        if update_rule == 'hebbian':
-            self.hebbian()
-        elif update_rule == 'anti_hebbian':
-            self.anti_hebbian()
-        elif update_rule == 'random_walk':
-            self.random_walk()
-        else:
-            raise Exception("Invalid update rule. Valid update rules are: " +
-                            "\'hebbian\', \'anti_hebbian\' and \'random_walk\'.")
+        self.update_rule()
 
     # make key from weight matrix
     def makeKey(self, key_length, iv_length):
