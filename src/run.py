@@ -105,12 +105,15 @@ def main():
     for Eve decreases exponentially for K >=3 with L.
     
     Based on this the following values are chosen to perform simulations and later analyze the data.
+    
+    Further testing revealed, that the runtime for networks with K > 5, N > 10 and L > 10 is really bad (10-30 seconds),
+    thus the reduced test values are used
     """
-    k_set = [3, 4, 5, 6]
-    n_set = [4, 16, 64, 128]
-    l_set = [4, 6, 8, 10, 12]
-    time_threshold = 10.0  # Seconds until the simulation terminates, reduce time taken by unsuccessful synchronizations
-    nb_simulations = 100  # The simulations to run for the given configuration
+    k_set = [3, 4, 5]
+    n_set = [4, 6, 8, 10]
+    l_set = [4, 6, 8, 10]
+    time_threshold = 20.0  # Seconds until the simulation terminates, reduce time taken by unsuccessful synchronizations
+    nb_simulations = 1000  # The simulations to run for the given configuration
     update_rule = 2  # Use random walk as learning rule, has highest relative entropy
     # update_rule = 0
 
