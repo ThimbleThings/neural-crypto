@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 
-k_set = [2, 3, 4, 5, 6, 7, 8]
-n_set = [2, 16, 128, 512, 1024]
-l_set = [2, 16, 64, 128, 256]
+k_set = [3, 4, 5, 6]
+n_set = [4, 16, 64, 128]
+l_set = [4, 6, 8, 10, 12]
 
 # Load the data
 df = pd.read_csv("../data/collectedData.csv")

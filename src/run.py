@@ -94,7 +94,25 @@ def main():
     # default Tree Parity Machine parameters
     key_length = 256  # bits
     iv_length = 0  # bits
-    update_rule = 'hebbian'
+
+    """
+    From testing and Neural Synchronization and Cryptography, Ruttor 2006 it was found, that values of K > 2
+    are beneficial to ensure a smaller amount of repulsive moves.
+    Ruttor also shows on pages 38-39, that the synchronization time is strictly dependent on m = 2 * L + 1,
+    with the standard deviation increasing drastically with larger m.
+    Page 42 shows, that the average synchronization time increases linearly with N.
+    On page 57 can be seen, that for the geometric attack (not the here employed simlpe attack) the success probability
+    for Eve decreases exponentially for K >=3 with L.
+    
+    Based on this the following values are chosen to perform simulations and later analyze the data.
+    """
+    k_set = [3, 4, 5, 6]
+    n_set = [4, 16, 64, 128]
+    l_set = [4, 6, 8, 10, 12]
+    time_threshold = 10.0  # Seconds until the simulation terminates, reduce time taken by unsuccessful synchronizations
+    nb_simulations = 100  # The simulations to run for the given configuration
+    update_rule = 2  # Use random walk as learning rule, has highest relative entropy
+    # update_rule = 0
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hK:N:L:k:v:i:o:r:", ["K=", "N=", "L=", "k=", "v=", "i=", "o=", "r="])
@@ -124,14 +142,6 @@ def main():
                 else:
                     update_rule = 2
 
-    # k_set = [2, 3, 4, 5, 6, 7, 8]
-    # n_set = [2, 16, 128, 512, 1024]
-    # l_set = [2, 16, 64, 128, 256]
-    k_set = [2, 3]
-    n_set = [2, 16]
-    l_set = [2, 16]
-    time_threshold = 10.0
-
     with open('../data/collectedData.csv', 'w') as f:
         # Write the CSV header
         f.write("K,N,L,ABUpdates,EUpdates,SyncAB,SyncAE,KeyA,KeyB,KeyE\n")
@@ -145,7 +155,7 @@ def main():
                     print("{} {} {}:".format(k, n, l))
                     start_time = time.time()
 
-                    for i in range(100):
+                    for i in range(nb_simulations):
                         # Measure time for one run
                         s_time = time.time()
 
