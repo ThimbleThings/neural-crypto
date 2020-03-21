@@ -6,7 +6,7 @@ n_set = [2, 16, 128, 512, 1024]
 l_set = [2, 16, 64, 128, 256]
 
 # Load the data
-df = pd.read_csv("collectedData.csv")
+df = pd.read_csv("../data/collectedData.csv")
 
 # Remove uninteresting data
 del df["KeyA"]
@@ -36,10 +36,12 @@ for k in k_set:
                 # Append the minimal and maximal number of rounds needed for synchronization
                 str(configuration_sync[:, 3].min()) + "," + str(configuration_sync[:, 3].max()) + "," +
                 # Append the success rate for the simple attack
-                str(configuration_attack.shape[0] / configuration_sync.shape[0])
+                str(configuration_attack.shape[0] / configuration_sync.shape[0]) + "," +
+                # Append the sample size to understand relevance of the success rate of the simple attack
+                str(configuration_sync.shape[0])
             )
 
-with open('collectedDataSync.csv', 'w') as f:
-    f.write("K,N,L,ABUpdates,EUpdates,SyncAB,SyncAE,UpdatesABmin,UpdatesABmax,SyncAESuccess\n")
+with open('../data/collectedDataSync.csv', 'w') as f:
+    f.write("K,N,L,ABUpdates,EUpdates,SyncAB,SyncAE,UpdatesABmin,UpdatesABmax,SyncAESuccess,SampleSize\n")
     for line in data:
         f.write(line + "\n")
