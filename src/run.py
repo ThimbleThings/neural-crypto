@@ -29,7 +29,7 @@ def sync_score(TPM1, TPM2, L):
     return 1.0 - np.average(1.0 * np.abs(TPM1.W - TPM2.W) / (2 * L))
 
 
-def main(K, N, L, key_length, iv_length, update_rule, time_threshold):
+def run(K, N, L, key_length, iv_length, update_rule, time_threshold):
     # Create TPM for Alice, Bob and Eve. Eve eavesdrops communication of Alice and Bob
     Alice = TPM(K, N, L, update_rule)
     Bob = TPM(K, N, L, update_rule)
@@ -84,20 +84,14 @@ def main(K, N, L, key_length, iv_length, update_rule, time_threshold):
     #           SyncAB                             SyncAE                             KeyA              KeyB
     #             KeyE
     data = str(K) + "," + str(N) + "," + str(L) + "," + str(nb_updates) + "," + str(nb_eve_updates) + "," + \
-            str(int(sync_history[-1])) + "," + str(int(sync_history_eve[-1])) + "," + Alice_key + "," + Bob_key + \
-            "," + Eve_key
+           str(int(sync_history[-1])) + "," + str(int(sync_history_eve[-1])) + "," + Alice_key + "," + Bob_key + \
+           "," + Eve_key
 
     return data
 
 
-if __name__ == "__main__":
-    # data collection list
-    data = list()
-
+def main():
     # default Tree Parity Machine parameters
-    K = 8
-    N = 12
-    L = 4
     key_length = 256  # bits
     iv_length = 0  # bits
     update_rule = 'hebbian'
@@ -106,30 +100,17 @@ if __name__ == "__main__":
         opts, args = getopt.getopt(sys.argv[1:], "hK:N:L:k:v:i:o:r:", ["K=", "N=", "L=", "k=", "v=", "i=", "o=", "r="])
     except getopt.GetoptError:
         print('unknown options')
-        print('run.py -r hebbian -i <input file> -o <output file> -K <nb hidden neurons> -N' +
-              ' <nb input neurons> -L <range of weight> -k <key length> -v <iv length>')
-        print('update rule : hebbian, anti_hebbian, random_walk')
-        print('key length options : 128, 192, 256')
-        print('iv length : [0:256] multiple of 4')
+        print('run.py -r hebbian')
+        print('update rule: hebbian, anti_hebbian, random_walk')
+        print('Default update rule: hebbian')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('run.py -r hebbian -i <input file> -o <output file> -K <nb hidden neurons> -N' +
-                  ' <nb input neurons> -L <range of weight> -k <key length> -v <iv length>')
-            print('update rule : hebbian, anti_hebbian, random_walk')
-            print('default values : K=8, N=12, L=4')
-            print('key length options : 128, 192, 256 bit')
-            print('iv length : [0:256] bit')
+            print('run.py -r hebbian')
+            print('update rule: hebbian, anti_hebbian, random_walk')
+            print('Default update rule: hebbian')
             sys.exit()
-        elif opt in ("-K", "--K"):
-            K = int(arg)
-        elif opt in ("-N", "--N"):
-            N = int(arg)
-        elif opt in ("-L", "--L"):
-            L = int(arg)
-        elif opt in ("-v", "--v"):
-            iv_length = int(arg)
-        elif opt in ("-r", "--r"):
+        if opt in ("-r", "--r"):
             if arg not in ['hebbian', 'anti_hebbian', 'random_walk']:
                 print('unknown update rule: ' + arg)
                 print('available options:')
@@ -142,13 +123,6 @@ if __name__ == "__main__":
                     update_rule = 1
                 else:
                     update_rule = 2
-        elif opt in ("-k", "--k"):
-            if arg == "128" or arg == "192" or arg == "256":
-                key_length = int(arg)
-            else:
-                print('non available key options')
-                print('key length options : 128, 192, 256')
-                sys.exit()
 
     # k_set = [2, 3, 4, 5, 6, 7, 8]
     # n_set = [2, 16, 128, 512, 1024]
@@ -158,7 +132,7 @@ if __name__ == "__main__":
     l_set = [2, 16]
     time_threshold = 10.0
 
-    with open('collectedData.csv', 'w') as f:
+    with open('../data/collectedData.csv', 'w') as f:
         # Write the CSV header
         f.write("K,N,L,ABUpdates,EUpdates,SyncAB,SyncAE,KeyA,KeyB,KeyE\n")
 
@@ -175,14 +149,18 @@ if __name__ == "__main__":
                         # Measure time for one run
                         s_time = time.time()
 
-                        data.append(main(k, n, l, key_length, iv_length, update_rule, time_threshold))
+                        data.append(run(k, n, l, key_length, iv_length, update_rule, time_threshold))
 
                         # print the time the run took
                         e_time = time.time()
                         print(e_time - s_time)
 
-                    # after a configuration was run for 1000 times write out the data
+                    # after a configuration was run for 100 times write out the data
                     for item in data:
                         f.write("{}\n".format(item))
 
                     print(time.time() - start_time)
+
+
+if __name__ == "__main__":
+    main()
