@@ -1,12 +1,18 @@
 import pandas as pd
 import numpy as np
 
-k_set = [3, 4, 5]
-n_set = [4, 6, 8, 10]
-l_set = [4, 6, 8, 10]
+csv_in_file = input("Path to the CSV Data File: ")
+csv_out_file = input("Path to the CSV Output File (will be overwritten!): ")
+k_vals = input("Integer Values for K (separated by a '.'): ")
+n_vals = input("Integer Values for N (separated by a '.'): ")
+l_vals = input("Integer Values for L (separated by a '.'): ")
+
+k_set = [int(x) for x in k_vals.split(".")]
+n_set = [int(x) for x in n_vals.split(".")]
+l_set = [int(x) for x in l_vals.split(".")]
 
 # Load the data
-df = pd.read_csv("../data/collectedData.csv")
+df = pd.read_csv(csv_in_file)
 
 # Remove uninteresting data
 del df["KeyA"]
@@ -41,7 +47,7 @@ for k in k_set:
                 str(configuration_sync.shape[0])
             )
 
-with open('../data/collectedDataSync.csv', 'w') as f:
+with open(csv_out_file, 'w') as f:
     f.write("K,N,L,ABUpdates,EUpdates,SyncAB,SyncAE,UpdatesABmin,UpdatesABmax,SyncAESuccess,SampleSize\n")
     for line in data:
         f.write(line + "\n")

@@ -90,11 +90,19 @@ def run(K, N, L, key_length, iv_length, update_rule, time_threshold):
     return data
 
 
-def main():
-    # default Tree Parity Machine parameters
-    key_length = 256  # bits
-    iv_length = 0  # bits
+def print_opts():
+    print('run.py -r hebbian -K 2.3.4 -N 2.3.4 -L 2.3.4 -n 100 -t 20.0')
+    print('update rule: hebbian, anti_hebbian, random_walk')
+    print('Default update rule: random_walk')
+    print('K number of neurons to test')
+    print('N number of inputs to test per neuron')
+    print('L maximum value to test for weights')
+    print('n the number of simulations per configuration of K, N, and L')
+    print('t the time in seconds before the simulation terminates (default 20.0)')
+    print('(stop simulation for unsuccessful synchronizations)')
 
+
+def main():
     """
     From testing and Neural Synchronization and Cryptography, Ruttor 2006 it was found, that values of K > 2
     are beneficial to ensure a smaller amount of repulsive moves.
@@ -104,38 +112,35 @@ def main():
     On page 57 can be seen, that for the geometric attack (not the here employed simlpe attack) the success probability
     for Eve decreases exponentially for K >=3 with L.
     
-    Based on this the following values are chosen to perform simulations and later analyze the data.
-    
     Further testing revealed, that the runtime for networks with K > 5, N > 10 and L > 10 is really bad (10-30 seconds),
-    thus the reduced test values are used
+    thus the reduced test values are used, feel free to test on your own.
     """
-    k_set = [3, 4, 5]
-    n_set = [4, 6, 8, 10]
-    l_set = [4, 6, 8, 10]
-    time_threshold = 20.0  # Seconds until the simulation terminates, reduce time taken by unsuccessful synchronizations
-    nb_simulations = 1000  # The simulations to run for the given configuration
+
+    # Default values to use
+    k_set = [2, 3, 4]
+    n_set = [2, 3, 4]
+    l_set = [2, 3, 4]
+    time_threshold = 20.0
+    nb_simulations = 100  # The simulations to run for the given configuration
     update_rule = 2  # Use random walk as learning rule, has highest relative entropy
-    # update_rule = 0
+    key_length = 256  # bits
+    iv_length = 0  # bits
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hK:N:L:k:v:i:o:r:", ["K=", "N=", "L=", "k=", "v=", "i=", "o=", "r="])
+        opts, args = getopt.getopt(sys.argv[1:], "hK:N:L:t:r:n:", ["K=", "N=", "L=", "t=", "r=", "n="])
     except getopt.GetoptError:
         print('unknown options')
-        print('run.py -r hebbian')
-        print('update rule: hebbian, anti_hebbian, random_walk')
-        print('Default update rule: hebbian')
+        print_opts()
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('run.py -r hebbian')
-            print('update rule: hebbian, anti_hebbian, random_walk')
-            print('Default update rule: hebbian')
+            print_opts()
             sys.exit()
         if opt in ("-r", "--r"):
             if arg not in ['hebbian', 'anti_hebbian', 'random_walk']:
                 print('unknown update rule: ' + arg)
                 print('available options:')
-                print('hebbian, anti_hebbian, random_walk')
+                print('hebbian, anti_hebbian, random_walk (default)')
                 sys.exit()
             else:
                 if str(arg) == 'hebbian':
@@ -144,6 +149,16 @@ def main():
                     update_rule = 1
                 else:
                     update_rule = 2
+        elif opt in ("-K", "--K"):
+            k_set = [int(x) for x in arg.split(".")]
+        elif opt in ("-N", "--N"):
+            n_set = [int(x) for x in arg.split(".")]
+        elif opt in ("-L", "--L"):
+            l_set = [int(x) for x in arg.split(".")]
+        elif opt in ("-t", "--t"):
+            time_threshold = float(arg)
+        elif opt in ("-n", "--n"):
+            nb_simulations = int(arg)
 
     with open('../data/collectedData.csv', 'w') as f:
         # Write the CSV header
