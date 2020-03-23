@@ -1,43 +1,47 @@
 # Neural cryptography protocol for key exchange
 
-Implementation of the key exchange protocol described in International Journal of Advanced Research in
-Computer Science and Software Engineering.
+Implementation of the key exchange protocol described in Neural Synchronization and Cryptography, Ruttor 2006.
+(Corrected two severe implementation errors found in the original git repo)
 
-Contrary to the statement in the original git, neural cryptography is not secure against a MITM Attack.
-What neural cryptography provides is an alternative to the Diffie-Hellman key exchange without needing a trapdoor functionality like the modulo operation and integer factorization.
+## Idea of this repository
 
-## openSSL
-Require openSSL to encyrpt with AES cipher.
+This repository is meant to provide a tool that allows testing the synchronization behaviour of two Tree Parity Machines
+for different configurations of the Parameters K, N, and L and the success rate of a simple attacker.
+Data for the simulations run by me is provided in the data folder.
+To plot this data the bubblePlot.py and boxPlot.py scripts can be used, requiring plotly and matplotlib respectively
+(bubblePlot is meant to process the collectedDataSyncXXX.csv files, boxPlot to process the collectedDataXXX.csv files).
 
-## Generate key and IV for AES encryption
-```bash
-python3 run.py -r hebbian -i <input file> -o <output file> -K <nb hidden neurons> -N <nb input neurons> -L <range of weight> -k <key length> -v <iv length>
-```
-r : update rules : 'hebbian', 'anti_hebbian' or 'random_walk'
-key length options : 128, 192, 256
-iv length : [0:256]
-if inputfile is read, aes encryption is executed.
+If you are interested in using this repo for further research feel free to send pull requests or contact me.
 
-## Use with openSSL
-if inputfile option not set, use openSSL to encrypt file.
-### Cipher with AES
+Interesting topics might be to implement the Query Mechanism proposed by Ruttor instead of using the random input
+vectors in this implementation. Also of interest might be the implementation of more sophisticated attacks
+(genetic attack, geometric attack, majority attack).
+
+
+### Important Note:
+
+Contrary to the statement in the original git by exced, neural cryptography is not secure against a MITM Attack.
+What neural cryptography provides is an alternative to the Diffie-Hellman key exchange without needing a trapdoor
+functionality like the modulo operation and integer factorization.
+
+
+## Simulation Example
+
+To generate your own data execute the run.py file with the configurations you want to investigate, for example:
 ```bash
-openssl enc -aes128 -K <key> -iv <init vector> -in <inputfile> -out <outputfile>
-openssl enc -aes192 -K <key> -iv <init vector> -in <inputfile> -out <outputfile>
-openssl enc -aes256 -K <key> -iv <init vector> -in <inputfile> -out <outputfile>
-```
-### Decipher with AES
-```bash
-openssl enc -aes128 -K <key> -iv <init vector> -in <inputfile(enc)> -out <outputfile> -d
-openssl enc -aes192 -K <key> -iv <init vector> -in <inputfile(enc)> -out <outputfile> -d
-openssl enc -aes256 -K <key> -iv <init vector> -in <inputfile(enc)> -out <outputfile> -d
-```
-## Examples
-```bash
-echo "hello world" > hello.txt
-python3 run.py -i hello.txt -k 256 -K 20 -N 50 -L 6
-cat out.enc
-cat decipher.txt
+python3 run.py -r hebbian -K 3.4.5 -N 3.4 -L 3.4 -n 10 -t 10.0
 ```
 
-![example1 synchronization of Alice and Bob](https://github.com/ThimbleThings/neural-crypto/blob/master/extras/ex1.png)
+From the generated CSV file you can extract interesting data using the extractCSVData.py script.
+On the two generated CSV files you can then use the plot scripts.
+
+The parameters to the simulation are:
+- r: the learning rule to use [hebbian, anti_hebbian, random_walk]
+- K: point separated integers for the numbers of neurons to test
+- N: point separated integers for the numbers of inputs per neuron to test
+- L: point separated integers for the maximum weight values to test
+- n: number of simulations to run per configuration of K, N, and L
+- t: time in seconds before a simulation terminates (default 20.0, stop simulation for unsuccessful synchronizations)
+
+
+[Example Plot](https://github.com/ThimbleThings/neural-crypto/blob/master/data/exampleData.html)
