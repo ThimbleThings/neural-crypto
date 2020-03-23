@@ -44,4 +44,4 @@ The parameters to the simulation are:
 - t: time in seconds before a simulation terminates (default 20.0, stop simulation for unsuccessful synchronizations)
 
 
-[Example Plot](https://github.com/ThimbleThings/neural-crypto/blob/master/data/exampleData.html)
+[Example Plot](https://github.com/ThimbleThings/neural-crypto/blob/master/example/exampleData.html)
