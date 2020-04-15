@@ -34,10 +34,12 @@ for k in k_set:
 
             # Select all rows for the configuration where A & B synchronize and of this matrix the columns for ABUpdates
             data = pd.concat([data, pd.DataFrame(df[k_rows & n_rows & l_rows & AB_rows].ABUpdates.values,
-                                                 columns=["K" + str(k) + "N" + str(n) + "L" + str(l)])], axis=1)
+                                                 columns=["K" + str(k) + ", N" + str(n) + ", L" + str(l)])], axis=1)
 
 # Calculate the boxplot data for the ABUpdates columns
 boxplot = data.boxplot()
+boxplot.set_xlabel("TPM Parameters")
+boxplot.set_ylabel("t_sync")
 
 # Show the boxplot
 plt.show()
